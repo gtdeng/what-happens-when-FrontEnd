@@ -1,7 +1,7 @@
 This repo attempts to answer the question: "What happens when you type google.com into your browser and press enter?" from a Front End Developer's point of view. This repo has been inspired by [Alex's What Happens When.](https://github.com/alex/what-happens-when)
 
 
-
+![Navigation Timing Overview](timing-overview.png) [1]
 
 
 ### PRECHECKS

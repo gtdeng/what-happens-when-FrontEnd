@@ -55,6 +55,60 @@ This repo attempts to answer the question: "What happens when you type google.co
   4-domComplete
   5-onLoad
 
+  #### 1-DOMLOADING (domLoading)
+  --Browser receives the first bits of the server response
+  --Browser fires off a "domLoading" event
+  --Since this is the first milliseconds of the actual browser processes, it is normally used as the start time of measuring how our pages are being rendered by a browser
+  --Browser "parses" the HTML from top to bottom to construct the "DOM"
+
+
+  #### 2-DOMINTERACTIVE (domInteractive)
+  --Browser fires off a "domInteractive" event and marks Document Interactive, since the DOM can be manipulated
+  --At this point, the initial HTML document has been completely loaded, parsed and the DOM is ready for edits/manipulation via CSS or JS scripts.
+  --Browser "synchronously fetches" the page's subresouces: external images, fonts, CSS, and JS
+  ---"domInteractive" serves as a useful metric to measure a website's speed from the user's perspective (Netflix uses this metric)
+
+
+  #### 3-DOMCONTENTLOADED (domContentLoaded)
+  --At this stage, all the DOM Contents (html, css, js) will be loaded
+  --Browser fires off a "domContentLoadedStart" event
+  --Browser parses the CSS files from the top down and the bottom styles overwrite the top rules
+  --Browser builds "CSSOM"
+  --Browser combines the CSSOM and the DOM into a "render tree"
+  --Browser parses traditional blocking scripts. see JS Scripts Run [3.5]
+  --Browser computes the "layouts" of each visible element
+  --Browser computes the exact position and size of each node in the render tree
+  --Browser "paints" the individual nodes to the screen and renders the pixels to the screen "first paint"
+  --Browser must have downloaded all CSS before firing off "domContentLoadedEnd"
+  --Browser fires off a "domContentLoadedEnd" event
+  --jQuery's callback inside $.ready() are called
+  --The page is finally visible in the viewport!!!
+
+
+  #### 3.5-JS SCRIPTS RUNS
+  --If you are using JS to make a cross-domain XHR call and the browser realizes that:
+  ---IF it is a simple GET request, it will proceed and make the actual XHR call
+  ---IF it is a complicated POST/DELETE etc request, it will go thru it's preflight checklist before making the OPTIONS call to the server with all the custom details. IF the server responds with the appropriate Access-Control-* header, the Browser will then make the actual XHR request.
+  ---Backend parses and responds to the request
+
+
+  #### 4-DOMCOMPLETE (domComplete)
+  --Browser loads images, videos and executes any JS scripts listening for the DOMContentLoadedEnd event
+  --Browser fires off a "domCompelete" event-handlers
+  --Browser continues to download images and other non-blocking assets and repaints as necessary
+  --Browser paints and replaces the white <img> placesholders with actual images
+  --Browser's loading spinner stops spinning
+
+
+  #### 5-ONLOAD (onLoad)
+  --Browser has received ALL resources that the page requires has been download and parsed (tho not ran)
+  --Browser fires off a "Loaded" event and marks Document Loaded
+  --All HTML resources (fonts, images, html contents) have been fully loaded and any dom content changes after this point will result in a visible "flash"
+  --Browser executes JS code waiting for the onLoad event
+  --Browser parses scripts in 'deferred' mode
+  --Service Worker gets installed
+  --Cookies and other content are set in the Local Storage
+  --Analytics starts monitoring user interactions
 
 
 

@@ -10,7 +10,7 @@ This repo attempts to answer the question: **What happens when you type google.c
 - Browser unloads current page
 - Browser checks whether it is a search term or a URL
 - Browser converts non-ASCII Unicode characters
-- Browser redirects to the requested URL
+- Browser redirects to the requested URL (google.com)
 
 
 ## APP CACHE / SERVICE WORKERS
@@ -30,19 +30,19 @@ This repo attempts to answer the question: **What happens when you type google.c
 - Browser initiates a TLS 3 way handshake checking for certificates to ensure an encrypted channel
 
 
-## ACTUAL REQUEST
+## HTTP GET REQUEST
 - Browser checks it's Cookies Storage (aka cookies jar)
 -- If found and not expired, Browser attaches a cookie with each subsequent request
-- Browser sends the actual Request for the resource
+- Browser sends a HTTP GET Request for the resource
 
 
 ## BACKEND RESPONSE
-- Backend Server processes request
-- Backend sends 301 (redirects) if your requested url is missing 'www' or 'https'
+- Backend Server processes GET request
+- Backend sends 301 (redirects) and restarts the process, if your requested url is missing 'www' or 'https'
 - The HTTP/web server (apache/nginx) processes the URL you entered
 - Backend sends 404 (not found) or continues it's resource generation
 - Backend code retries/generates the HTML and execute queries from the DB
-- Backend sends back a 200 (ok) RESPONSE to the web-server
+- Backend sends back a 200 (OK) RESPONSE to the web-server
 -- Backend normally sends HTML page to the browser via the HTTP channel
 -- Backend could send a ServiceWorker.js to establish a ServiceWorker, which improves page performance
 -- Backend could also perform "server-side rendering", rending the entire page on the backend and sending the associated html, css, js, state as an 'html string' which is then parsed by the client
@@ -66,9 +66,11 @@ This repo attempts to answer the question: **What happens when you type google.c
 
 ### 2. DOMINTERACTIVE (domInteractive)
 - Browser fires off a "domInteractive" event and marks Document Interactive, since the DOM can be manipulated
-- At this point, the initial HTML document has been completely loaded, parsed and the DOM is ready for edits/manipulation via CSS or JS scripts.
-- Browser "synchronously fetches" the page's subresouces: external images, fonts, CSS, and JS
--- "domInteractive" serves as a useful metric to measure a website's speed from the user's perspective (Netflix uses this metric)
+- At this point, the initial HTML document has been completely loaded, parsed and the DOM is ready for edits/manipulation via CSS or JS scripts
+- Browser checks the localStorage, sessionStorage, cacheStorage for the page's subresources; if unexpired, it will will load these resources. This is separate from the initial "has google.com's page been cached" checks. The browser checks whether a profile picture (or a jQuery library) from that CDN (eg lh3.googleusercontent.com or www.gstatic.com or cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js) has ever been cached
+- If not found, the Browser "synchronously fetches" the page's subresources with a simple HTTP GET request: external images, fonts, CSS, and JS; and caches that data
+--  If it was a non-simple, non-GET request to a different origin (eg googleusercontent.com or www.gstatic.com); the Browser would initiate its preflight checklist and send an OPTIONS call to the server 
+- "domInteractive" serves as a useful metric to measure a website's speed from the user's perspective (Netflix uses this metric)
 
 
 ### 3. DOMCONTENTLOADED (domContentLoaded)
@@ -88,9 +90,9 @@ This repo attempts to answer the question: **What happens when you type google.c
 
 
 ### 3.5. JS SCRIPTS RUNS
-- If you are using JS to make a cross-domain XHR call and the browser realizes that:
--- IF it is a simple GET request, it will proceed and make the actual XHR call
--- IF it is a complicated POST/DELETE etc request, it will go thru it's preflight checklist before making the OPTIONS call to the server with all the custom details. IF the server responds with the appropriate Access-Control-* header, the Browser will then make the actual XHR request.
+- If you are using JS to make a cross-domain XHR (XMLHTTPRequest) and the browser realizes that:
+-- If it is a simple GET request, it will proceed and make the actual XHR
+-- If it is a complicated POST/DELETE etc request, it will go thru it's preflight checklist before making the OPTIONS call to the server with all the custom details. If the server responds with the appropriate Access-Control-* header, the Browser will then make the actual XHR
 - Backend parses and responds to the request
 
 
@@ -109,8 +111,15 @@ This repo attempts to answer the question: **What happens when you type google.c
 - Browser executes JS code waiting for the onLoad event
 - Browser parses scripts in 'deferred' mode
 - Service Worker gets installed
-- Cookies and other content are set in the Local Storage
+- Cookies and other content are set in the cookieStorage, localStorage, sessionStorage, and cacheStorage
 - Analytics starts monitoring user interactions
+
+
+
+
+### TODO:
+- Add client and server handling of sessions leading to retrieval of a logged in user profile photo
+- Add client css handling of 2x images optimized for Retina Displays. Google does send them from lh3.googleusercontent.com
 
 
 ___

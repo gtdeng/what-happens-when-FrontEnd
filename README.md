@@ -1,5 +1,13 @@
 This repo attempts to answer the question: **What happens when you type google.com into your browser and press enter?** from a Front End Developer's point of view and is inspired by [Alex's What-Happens-When Repo.](https://github.com/alex/what-happens-when)
 
+## TL;DR
+- Browser Prechecks
+- DNS Resolution
+- Establish 3 way handshake
+- HTTP GET request sent
+- Backend Response
+- Browser Processing/Parsing
+
 
 ## Navigation Timing Overview
 ![Navigation Timing Overview](timing-overview.png) [1]
@@ -20,6 +28,7 @@ This repo attempts to answer the question: **What happens when you type google.c
 
 
 ## DNS RESOLVER
+- Browser kicks off the DNS Resolution process
 - Browser asks for the IP address that corresponds to URL you entered from the DNS Cache in Chrome, your local hosts file and then your DNS on your router and then failing that, your ISP's caching DNS server
 - DNS Resolver finds the shortest endpoint's IP address and sends it back to the Browser
 
@@ -37,12 +46,13 @@ This repo attempts to answer the question: **What happens when you type google.c
 
 
 ## BACKEND RESPONSE
-- Backend Server processes GET request
-- Backend sends 301 (redirects) and restarts the process, if your requested url is missing 'www' or 'https'
-- The HTTP/web server (apache/nginx) processes the URL you entered
-- Backend sends 404 (not found) or continues it's resource generation
+- Backend Server (normally a reverse proxy server, like apache or nginx) processes GET request
+- Reverse Proxy server sends 301 (redirects) and restarts the process, if your requested url is missing 'www' or 'https'
+- Reverse Proxy server maps the URL you entered in it's Routing Table
+- Reverse Proxy server sends 404 (not found) or continues it's resource generation by establishing a connecting with the Web Server
+- The HTTP/web server (node, ruby on rails, scala...) processes the GET request
 - Backend code retries/generates the HTML and execute queries from the DB
-- Backend sends back a 200 (OK) RESPONSE to the web-server
+- Backend sends back a 200 (OK) along with the response to the client
 -- Backend normally sends HTML page to the browser via the HTTP channel
 -- Backend could send a ServiceWorker.js to establish a ServiceWorker, which improves page performance
 -- Backend could also perform "server-side rendering", rending the entire page on the backend and sending the associated html, css, js, state as an 'html string' which is then parsed by the client
@@ -69,7 +79,7 @@ This repo attempts to answer the question: **What happens when you type google.c
 - At this point, the initial HTML document has been completely loaded, parsed and the DOM is ready for edits/manipulation via CSS or JS scripts
 - Browser checks the localStorage, sessionStorage, cacheStorage for the page's subresources; if unexpired, it will will load these resources. This is separate from the initial "has google.com's page been cached" checks. The browser checks whether a profile picture (or a jQuery library) from that CDN (eg lh3.googleusercontent.com or www.gstatic.com or cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js) has ever been cached
 - If not found, the Browser "synchronously fetches" the page's subresources with a simple HTTP GET request: external images, fonts, CSS, and JS; and caches that data
---  If it was a non-simple, non-GET request to a different origin (eg googleusercontent.com or www.gstatic.com); the Browser would initiate its preflight checklist and send an OPTIONS call to the server 
+--  If it was a non-simple, non-GET request to a different origin (eg googleusercontent.com or www.gstatic.com); the Browser would initiate its preflight checklist and send an OPTIONS call to the server
 - "domInteractive" serves as a useful metric to measure a website's speed from the user's perspective (Netflix uses this metric)
 
 
@@ -120,7 +130,7 @@ This repo attempts to answer the question: **What happens when you type google.c
 ### TODO:
 - Add client and server handling of sessions leading to retrieval of a logged in user profile photo
 - Add client css handling of 2x images optimized for Retina Displays. Google does send them from lh3.googleusercontent.com
-
+- Add at TLDR section on the top
 
 ___
 This is all licensed under the terms of the Creative Commons Zero license.

@@ -4,7 +4,7 @@ This repo attempts to answer the question: "What happens when you type google.co
 ![Navigation Timing Overview](timing-overview.png) [1]
 
 
-### PRECHECKS
+## PRECHECKS
 --Browser prompts for unload of current page
 --Browser unloads current page
 --Browser checks whether it is a search term or a URL
@@ -12,30 +12,30 @@ This repo attempts to answer the question: "What happens when you type google.co
 --Browser redirects to the requested URL
 
 
-### APP CACHE / SERVICE WORKERS
+## APP CACHE / SERVICE WORKERS
 --Browser checks for cached data in browser storage (1.Local Storage 2.Session Storage 3.Cookies Storage 4.Cache Storage 5.Application Cache)
 --Service Workers intercepts requests, and routes browser requests to a local cache if present
 --If there's cached data, it will return the cached data stored in your sessionStorage or localStorage
 
 
-### DNS RESOLVER
+## DNS RESOLVER
 --Browser asks for the IP address that corresponds to URL you entered from the DNS Cache in Chrome, your local hosts file and then your DNS on your router and then failing that, your ISP's caching DNS server
 --DNS Resolver finds the shortest endpoint's IP address and sends it back to the Browser
 
 
-### TCP CONNECTION
+## TCP CONNECTION
 --Browser initiates a connection to that IP using port 80 or 443 (depending on whether you are browsing via HTTP port 80 or the secured HTTPS port 443)
 --Browser opens a Socket via TCP
 --Browser initiates a TLS 3 way handshake checking for certificates to ensure an encrypted channel
 
 
-### ACTUAL REQUEST
+## ACTUAL REQUEST
 --Browser checks it's Cookies Storage (aka cookies jar)
 ---If found and not expired, Browser attaches a cookie with each subsequent request
 --Browser sends the actual Request for the resource
 
 
-### BACKEND RESPONSE
+## BACKEND RESPONSE
 --Backend Server processes request
 --Backend sends 301 (redirects) if your requested url is missing 'www' or 'https'
 --The HTTP/web server (apache/nginx) processes the URL you entered
@@ -47,7 +47,7 @@ This repo attempts to answer the question: "What happens when you type google.co
 ---Backend could also perform "server-side rendering", rending the entire page on the backend and sending the associated html, css, js, state as an 'html string' which is then parsed by the client
 
 
-### BROWSER PROCESSING
+## BROWSER PROCESSING
 -Browser receives HTML page and executes the following steps in the Critical Rendering Path:
   1-domLoading
   2-domInteractive
@@ -55,21 +55,21 @@ This repo attempts to answer the question: "What happens when you type google.co
   4-domComplete
   5-onLoad
 
-  #### 1-DOMLOADING (domLoading)
+  ### 1-DOMLOADING (domLoading)
   --Browser receives the first bits of the server response
   --Browser fires off a "domLoading" event
   --Since this is the first milliseconds of the actual browser processes, it is normally used as the start time of measuring how our pages are being rendered by a browser
   --Browser "parses" the HTML from top to bottom to construct the "DOM"
 
 
-  #### 2-DOMINTERACTIVE (domInteractive)
+  ### 2-DOMINTERACTIVE (domInteractive)
   --Browser fires off a "domInteractive" event and marks Document Interactive, since the DOM can be manipulated
   --At this point, the initial HTML document has been completely loaded, parsed and the DOM is ready for edits/manipulation via CSS or JS scripts.
   --Browser "synchronously fetches" the page's subresouces: external images, fonts, CSS, and JS
   ---"domInteractive" serves as a useful metric to measure a website's speed from the user's perspective (Netflix uses this metric)
 
 
-  #### 3-DOMCONTENTLOADED (domContentLoaded)
+  ### 3-DOMCONTENTLOADED (domContentLoaded)
   --At this stage, all the DOM Contents (html, css, js) will be loaded
   --Browser fires off a "domContentLoadedStart" event
   --Browser parses the CSS files from the top down and the bottom styles overwrite the top rules
@@ -85,14 +85,14 @@ This repo attempts to answer the question: "What happens when you type google.co
   --The page is finally visible in the viewport!!!
 
 
-  #### 3.5-JS SCRIPTS RUNS
+  ### 3.5-JS SCRIPTS RUNS
   --If you are using JS to make a cross-domain XHR call and the browser realizes that:
   ---IF it is a simple GET request, it will proceed and make the actual XHR call
   ---IF it is a complicated POST/DELETE etc request, it will go thru it's preflight checklist before making the OPTIONS call to the server with all the custom details. IF the server responds with the appropriate Access-Control-* header, the Browser will then make the actual XHR request.
   ---Backend parses and responds to the request
 
 
-  #### 4-DOMCOMPLETE (domComplete)
+  ### 4-DOMCOMPLETE (domComplete)
   --Browser loads images, videos and executes any JS scripts listening for the DOMContentLoadedEnd event
   --Browser fires off a "domCompelete" event-handlers
   --Browser continues to download images and other non-blocking assets and repaints as necessary
@@ -100,7 +100,7 @@ This repo attempts to answer the question: "What happens when you type google.co
   --Browser's loading spinner stops spinning
 
 
-  #### 5-ONLOAD (onLoad)
+  ### 5-ONLOAD (onLoad)
   --Browser has received ALL resources that the page requires has been download and parsed (tho not ran)
   --Browser fires off a "Loaded" event and marks Document Loaded
   --All HTML resources (fonts, images, html contents) have been fully loaded and any dom content changes after this point will result in a visible "flash"
